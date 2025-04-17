@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.sunbird</groupId>
+    <groupId>net.karmayogibharat</groupId>
     <artifactId>cloud-store-sdk_2.12</artifactId>
     <version>1.4.8</version>
     <packaging>jar</packaging>
@@ -22,28 +22,16 @@
   		</license>
 	</licenses>
 	<developers>
-    <developer>
-		<name>Sunbird</name>
-		<email>info@sunbird.org</email>
-		<organization>Sunbird</organization>
-		<organizationUrl>https://www.sunbird.org/</organizationUrl>
-    </developer>
-  </developers>
-    <distributionManagement>
-  		<snapshotRepository>
-    		<id>ossrh</id>
-    		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-  		</snapshotRepository>
-  		<repository>
-    		<id>ossrh</id>
-    		<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-  		</repository>
-	</distributionManagement>
+		<developer>
+			<name>iGot NOC</name>
+			<email>igot.noc@tarento.com</email>
+			<organization>Tarento</organization>
+			<organizationUrl>https://www.tarento.com/</organizationUrl>
+		</developer>
+	</developers>
 	<scm>
-    	<connection>scm:git:git://github.com/project-sunbird/sunbird-cloud-storage-sdk.git</connection>
-    	<developerConnection>scm:git:ssh://github.com/project-sunbird/sunbird-cloud-storage-sdk.git</developerConnection>
-    	<url>https://github.com/project-sunbird/sunbird-cloud-storage-sdk/tree/master</url>
-   </scm>
+		<url>https://github.com/KB-iGOT/sunbird-cloud-storage-sdk/tree/cbrelease-4.8.23-s-2.12.19</url>
+	</scm>
     <dependencies>
     	<dependency>
 			<groupId>org.scala-lang</groupId>
@@ -218,16 +206,15 @@
       			</executions>
     		</plugin>
 			<plugin>
-		      	<groupId>org.sonatype.plugins</groupId>
-		      	<artifactId>nexus-staging-maven-plugin</artifactId>
-		      	<version>1.6.7</version>
-		      	<extensions>true</extensions>
-		      	<configuration>
-		        	<serverId>ossrh</serverId>
-		        	<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-		        	<!-- <autoReleaseAfterClose>true</autoReleaseAfterClose> -->
-		      	</configuration>
-		    </plugin>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.4.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>central</serverId>
+					<tokenAuth>true</tokenAuth>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
