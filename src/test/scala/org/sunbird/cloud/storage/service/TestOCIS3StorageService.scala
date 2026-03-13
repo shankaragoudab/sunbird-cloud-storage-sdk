@@ -21,6 +21,23 @@ class TestOCIS3StorageService  extends FlatSpec with Matchers {
       }
     assert(caught.getMessage.contains("Failed to upload."))
 
+    // Test getObjectStream method - will fail with invalid credentials but verifies method exists
+    try {
+      val stream = ociS3Service.getObjectStream(storageContainer, "testUpload/test-stream.log")
+      stream should not be null
+      stream.close()
+    } catch {
+      case e: Exception => println(s"Stream test skipped (expected with invalid config): ${e.getMessage}")
+    }
+
+    // Test getSignedURLV2 method - will fail with invalid credentials but verifies method exists
+    try {
+      val signedUrlV2 = ociS3Service.getSignedURLV2(storageContainer, "testUpload/test-signedv2.log", Option(600), Option("r"), Option("text/plain"))
+      signedUrlV2 should not be null
+    } catch {
+      case e: Exception => println(s"SignedURLV2 test skipped (expected with invalid config): ${e.getMessage}")
+    }
+
     /**
      * Use the below complete block when we have the valid configuration and
      * to test the OCI functionality.

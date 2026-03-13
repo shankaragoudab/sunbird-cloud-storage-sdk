@@ -210,4 +210,17 @@ trait IStorageService {
       */
     def getUri(container: String, _prefix: String, isDirectory: Option[Boolean] = Option(false)): String
 
+    /**
+     * Get an InputStream for zero-disk streaming of an object from cloud storage.
+     * This method provides direct access to the object data without writing to disk.
+     * The caller is responsible for closing the stream after use.
+     *
+     * @param container String - The container/bucket of the file
+     * @param objectKey String - The key/path of the file to stream
+     *
+     * @return java.io.InputStream - The input stream for reading object data directly
+     * @throws StorageServiceException if the object does not exist or cannot be accessed
+     */
+    def getObjectStream(container: String, objectKey: String): java.io.InputStream
+
 }
