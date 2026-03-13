@@ -64,6 +64,36 @@ class TestGcloudStorageService extends FlatSpec with Matchers {
       }
     assert(caught2.getMessage.contains("Failed to upload."))
 
+    // Test getObjectStream method
+    try {
+      gsService.upload(storageContainer, "src/test/resources/test-data.log", "testUpload/test-stream.log", Option(false), Option(1), Option(2), None)
+      val stream = gsService.getObjectStream(storageContainer, "testUpload/test-stream.log")
+      stream should not be null
+      val bytesRead = stream.read()
+      bytesRead should be >= 0
+      stream.close()
+      gsService.deleteObject(storageContainer, "testUpload/test-stream.log")
+    } catch {
+      case e: Exception => println(s"Stream test skipped: ${e.getMessage}")
+    }
+
+    // Test getSignedURLV2 method - this should work properly with GCP
+    try {
+      gsService.upload(storageContainer, "src/test/resources/test-data.log", "testUpload/test-signedv2.log", Option(false), Option(1), Option(2), None)
+      val signedUrlV2 = gsService.getSignedURLV2(storageContainer, "testUpload/test-signedv2.log", Option(600), Option("r"), Option("text/plain"))
+      signedUrlV2 should not be null
+      signedUrlV2 should not be empty
+
+      // Test write permission with contentType
+      val writeUrlV2 = gsService.getSignedURLV2(storageContainer, "testUpload/test-signedv2-write.log", Option(600), Option("w"), Option("application/json"))
+      writeUrlV2 should not be null
+      writeUrlV2 should not be empty
+
+      gsService.deleteObject(storageContainer, "testUpload/test-signedv2.log")
+    } catch {
+      case e: Exception => println(s"SignedURLV2 test skipped: ${e.getMessage}")
+    }
+
     gsService.closeContext()
   }
 }

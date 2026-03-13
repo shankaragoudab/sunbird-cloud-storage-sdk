@@ -327,4 +327,19 @@ trait BaseStorageService extends IStorageService {
         context.close()
     }
 
+    override def getObjectStream(container: String, objectKey: String): java.io.InputStream = {
+        try {
+            val blob = blobStore.getBlob(container, objectKey)
+            if (blob == null) {
+                throw new StorageServiceException(s"Object not found: container=$container, objectKey=$objectKey")
+            }
+            blob.getPayload.getInput
+        } catch {
+            case e: StorageServiceException =>
+                throw e
+            case e: Exception =>
+                throw new StorageServiceException(s"Failed to get object stream: container=$container, objectKey=$objectKey. Error: ${e.getMessage}", e)
+        }
+    }
+
 }

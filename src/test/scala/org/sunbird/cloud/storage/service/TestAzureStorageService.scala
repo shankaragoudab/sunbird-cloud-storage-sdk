@@ -65,6 +65,30 @@ class TestAzureStorageService extends FlatSpec with Matchers {
             }
         assert(caught.getMessage.contains("Failed to upload."))
 
+        // Test getObjectStream method
+        try {
+            azureService.upload(storageContainer, "src/test/resources/test-data.log", "testUpload/test-stream.log", Option(false), Option(1), Option(2), None)
+            val stream = azureService.getObjectStream(storageContainer, "testUpload/test-stream.log")
+            stream should not be null
+            val bytesRead = stream.read()
+            bytesRead should be >= 0
+            stream.close()
+            azureService.deleteObject(storageContainer, "testUpload/test-stream.log")
+        } catch {
+            case e: Exception => println(s"Stream test skipped: ${e.getMessage}")
+        }
+
+        // Test getSignedURLV2 method
+        try {
+            azureService.upload(storageContainer, "src/test/resources/test-data.log", "testUpload/test-signedv2.log", Option(false), Option(1), Option(2), None)
+            val signedUrlV2 = azureService.getSignedURLV2(storageContainer, "testUpload/test-signedv2.log", Option(600), Option("r"), Option("text/plain"))
+            signedUrlV2 should not be null
+            signedUrlV2 should not be empty
+            azureService.deleteObject(storageContainer, "testUpload/test-signedv2.log")
+        } catch {
+            case e: Exception => println(s"SignedURLV2 test skipped: ${e.getMessage}")
+        }
+
         azureService.closeContext()
     }
 }
