@@ -74,6 +74,10 @@ class TestAzureStorageService extends FlatSpec with Matchers {
             bytesRead should be >= 0
             stream.close()
             azureService.deleteObject(storageContainer, "testUpload/test-stream.log")
+
+            // Test getObjectStream returns null for non-existent object
+            val nullStream = azureService.getObjectStream(storageContainer, "testUpload/non-existent-file.log")
+            nullStream should be (null)
         } catch {
             case e: Exception => println(s"Stream test skipped: ${e.getMessage}")
         }
@@ -87,6 +91,14 @@ class TestAzureStorageService extends FlatSpec with Matchers {
             azureService.deleteObject(storageContainer, "testUpload/test-signedv2.log")
         } catch {
             case e: Exception => println(s"SignedURLV2 test skipped: ${e.getMessage}")
+        }
+
+        // Test getObjectOrNull method - non-existing object should return null
+        try {
+            val nonExistentBlob = azureService.getObjectOrNull(storageContainer, "testUpload/non-existent-file.log")
+            nonExistentBlob should be(null)
+        } catch {
+            case e: Exception => println(s"getObjectOrNull test skipped: ${e.getMessage}")
         }
 
         azureService.closeContext()

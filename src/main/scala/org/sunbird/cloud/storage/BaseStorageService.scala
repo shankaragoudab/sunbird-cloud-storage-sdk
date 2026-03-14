@@ -331,14 +331,35 @@ trait BaseStorageService extends IStorageService {
         try {
             val blob = blobStore.getBlob(container, objectKey)
             if (blob == null) {
-                throw new StorageServiceException(s"Object not found: container=$container, objectKey=$objectKey")
+                null
+            } else {
+                blob.getPayload.getInput
             }
-            blob.getPayload.getInput
         } catch {
-            case e: StorageServiceException =>
-                throw e
             case e: Exception =>
                 throw new StorageServiceException(s"Failed to get object stream: container=$container, objectKey=$objectKey. Error: ${e.getMessage}", e)
+        }
+    }
+
+    def getObjectOrNull(container: String, objectKey: String, withPayload: Option[Boolean] = Option(false)): Blob = {
+        try {
+            val blob = blobStore.getBlob(container, objectKey)
+            if (blob == null) {
+                return null
+            }
+
+            val objData = blob.getMetadata
+            if (objData == null) {
+                return null
+            }
+
+            val metaData = JSONUtils.deserialize[Map[String, AnyRef]](JSONUtils.serialize(objData))
+            val payload = if(withPayload.get) Option(blob.getPayload.getContentMetadata.getContentMD5AsHashCode.asBytes()) else None
+            Blob(objectKey, objData.getContentMetadata.getContentLength, objData.getLastModified, metaData, payload)
+        } catch {
+            case _: NullPointerException => null
+            case e: Exception =>
+                throw new StorageServiceException(e.getMessage, e)
         }
     }
 

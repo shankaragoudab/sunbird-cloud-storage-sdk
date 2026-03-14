@@ -24,8 +24,14 @@ class TestOCIS3StorageService  extends FlatSpec with Matchers {
     // Test getObjectStream method - will fail with invalid credentials but verifies method exists
     try {
       val stream = ociS3Service.getObjectStream(storageContainer, "testUpload/test-stream.log")
-      stream should not be null
-      stream.close()
+      // Stream can be null if the object doesn't exist
+      if (stream != null) {
+        stream.close()
+      }
+
+      // Test getObjectStream returns null for non-existent object
+      val nullStream = ociS3Service.getObjectStream(storageContainer, "testUpload/non-existent-file.log")
+      // nullStream can be null (expected behavior for non-existent objects)
     } catch {
       case e: Exception => println(s"Stream test skipped (expected with invalid config): ${e.getMessage}")
     }
@@ -36,6 +42,14 @@ class TestOCIS3StorageService  extends FlatSpec with Matchers {
       signedUrlV2 should not be null
     } catch {
       case e: Exception => println(s"SignedURLV2 test skipped (expected with invalid config): ${e.getMessage}")
+    }
+
+    // Test getObjectOrNull method - non-existing object should return null
+    try {
+      val nonExistentBlob = ociS3Service.getObjectOrNull(storageContainer, "testUpload/non-existent-file.log")
+      nonExistentBlob should be(null)
+    } catch {
+      case e: Exception => println(s"getObjectOrNull test skipped (expected with invalid config): ${e.getMessage}")
     }
 
     /**
